@@ -1,0 +1,100 @@
+<body>
+  <div class="d-flex">
+    <div class="col-8">
+      <div class="d-flex justify-content-center">
+        <div class="d-flex flex-column ">
+          <div class="card">
+            <p-galleria [value]="documentImageList" [showItemNavigators]="true" [thumbnailsPosition]="position"
+              [showThumbnails]="false" [(activeIndex)]="activeIndex" [responsiveOptions]="responsiveOptions"
+              [containerStyle]="{ 'max-width': '612px' }" [numVisible]="5">
+              <ng-template pTemplate="item" let-item>
+                <div class="bg-img" #mybounds>
+                  <img class="img-single" [src]="item" alt="รูปภาพ">
+                  <ng-container *ngIf="this.signVisible">
+                    <div *ngFor="let component of this.signImageList" ngDraggable ngResizable [rzAspectRatio]="true"
+                      rzHandles="n,s,e,w,se,sw" class="sign-img" [bounds]="mybounds" [inBounds]="true"
+                      (endOffset)="onMoveEnd($event, component)" (rzResizing)="onResizing($event, component)"
+                      [rzMinWidth]="100" [rzMaxWidth]="612" [rzMinHeight]="100" [rzMaxHeight]="792"
+                      (click)="clickComponent(component)">
+                      <img [width]="component.signWidth" [height]="component.signHeight" [src]="component.signContent"
+                        #targetRef>
+                    </div>
+                  </ng-container>
+                </div>
+                <!-- <img [src]="item.imageBase64" style="width: 100%; min-height: 792px; display: block;" />
+                      <ng-container *ngIf="this.signVisible">
+                        <div *ngFor="let component of this.documentImageList" ngDraggable ngResizable [rzAspectRatio]="true"
+                          rzHandles="n,s,e,w,se,sw" class="sign-img" [bounds]="mybounds" [inBounds]="true"
+                          (endOffset)="onMoveEnd($event, component)" (rzResizing)="onResizing($event, component)" [rzMinWidth]="100" [rzMaxWidth]="612"
+                          [rzMinHeight]="100" [rzMaxHeight]="792" (click)="clickComponent(component)">
+                          <img [width]="component.scaleX" [height]="component.scaleY" [src]="component.fileContent" #targetRef>
+                        </div>
+                      </ng-container> -->
+              </ng-template>
+              <!-- <ng-template pTemplate="thumbnail" let-item>
+                  <div class="grid grid-nogutter justify-content-center">
+                    <img [src]="item" style="width: auto; height: 100px;" />
+                  </div>
+                </ng-template> -->
+            </p-galleria>
+          </div>
+          <!-- <div class="bg-img" #mybounds>
+              <img class="img-single" *ngIf="showImage" [src]="li_CBScanImage[currentImageIndex].imageBase64"
+                alt="รูปภาพ" [style.scale]="zoom" [style.rotate.deg]="degree">
+              <ng-container *ngIf="this.signVisible">
+                <div *ngFor="let component of this.documentImageList" ngDraggable ngResizable [rzAspectRatio]="true"
+                  rzHandles="n,s,e,w,se,sw" class="sign-img" [bounds]="mybounds" [inBounds]="true"
+                  (endOffset)="onMoveEnd($event, component)" (rzResizing)="onResizing($event, component)" [rzMinWidth]="100" [rzMaxWidth]="612"
+                  [rzMinHeight]="100" [rzMaxHeight]="792" (click)="clickComponent(component)">
+                  <img [width]="component.scaleX" [height]="component.scaleY" [src]="component.fileContent" #targetRef>
+                </div>
+              </ng-container>
+            </div> -->
+
+          <div class="d-flex justify-content-between">
+            <p-button icon="pi pi-chevron-left" (click)="showPreviousImage()"></p-button>
+            <p-button icon="pi pi-chevron-right" (click)="showNextImage()"></p-button>
+          </div>
+        </div>
+      </div>
+      <!-- <div>
+          <p-dialog class="pnDialog" header="เพิ่มลายเซ็น" [(visible)]="DisplaySignDialog" [modal]="true"
+            [dismissableMask]="true" [draggable]="false" [resizable]="false"
+            [breakpoints]="{'1200px': '60vw', '800px': '90vw'}" [style]="{width: '40vw'}">
+          </p-dialog>
+        </div> -->
+    </div>
+    <div class="col-3">
+      <!-- <div class="row mt-5">
+          <label htmlFor="documentname">ชื่อเอกสาร</label>
+          <input pInputText id="documentname" aria-describedby="documentname-help" [(ngModel)]="documentName" />
+        </div> -->
+      <div class="col mt-5">
+        <p-fileUpload name="file[]" [multiple]="false" [showUploadButton]="false" [showCancelButton]="false"
+          accept=".pdf" chooseLabel="เพิ่มเอกสาร" [fileLimit]="1" (onSelect)="documentUpload($event)"
+          (onRemove)="onFileRemove($event)"></p-fileUpload>
+        <!-- <p-button label="Add Signature" (click)="editSignImage()"></p-button> -->
+        <!-- <input type="file" id="upload" (change)="handleUpload($event)" multiple hidden>
+          <label class="chooseButton" for="upload">Choose File</label> -->
+      </div>
+      <div class="col mt-5">
+        <div class="mr-2">
+          <label for="stamp">เพิ่มข้อความ</label>
+        </div>
+        <input id="stamp" type="text" pInputText [(ngModel)]="textStamp" />
+      </div>
+      <div class="col mt-5">
+        <p-fileUpload name="file[]" [multiple]="true" [showUploadButton]="false" [showCancelButton]="false"
+          accept="image/*" chooseLabel="เพิ่มลายเซ็น" [fileLimit]="5" (onSelect)="onFileSelect($event)"
+          (onRemove)="onFileRemove($event)"></p-fileUpload>
+        <div class="mt-2">
+          <p-button label="Stamp" (click)="stamp()"></p-button>
+        </div>
+        <!-- <p-button label="Add Signature" (click)="editSignImage()"></p-button> -->
+        <!-- <input type="file" id="upload" (change)="handleUpload($event)" multiple hidden>
+          <label class="chooseButton" for="upload">Choose File</label> -->
+      </div>
+    </div>
+
+  </div>
+</body>

@@ -1,0 +1,86 @@
+.image-list {
+    display: flex; /* ให้รูปภาพแสดงเรียงต่อกันแนวนอน */
+    flex-wrap: wrap; /* ให้ขึ้นบรรทัดใหม่เมื่อครบขนาด */
+    gap: 16px; /* ระยะห่างระหว่างรูปภาพ */
+  }
+  
+  .image-slider {
+    // display: flex;
+    // align-items: center;
+    // justify-content: space-between;
+    width: 1700px;
+    height: 2200px;
+    border: 1px solid #000000;
+    overflow: hidden;
+    // position: absolute;
+    cursor: move;
+    box-sizing: border-box;
+    transform: scale(100%);
+    transform: translate(0%, 0%);
+    display: inline-flex;
+    z-index: 1;
+  }
+  
+  .img-single {
+    max-width: 100%;
+    max-height: 100%;
+    // transform: scale(0.5);
+    // display: block;
+    // margin: 0 auto;
+  }
+  
+  html, body { height: 100%; }
+  body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+  
+  .sign-box {
+    // cursor: move;
+    // display: inline-flex;
+    // justify-content: center;
+    // align-items: center;
+    position: absolute;
+    // z-index: 1;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(0%, 0%);
+  }
+  .bg-img {
+    width: 612px;
+    height: 792px;
+    border: solid 1px #000000;
+    // position: relative;
+    top: 0;
+    left: 0;
+    cursor: move;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: #fff;
+    z-index: 1;
+    box-sizing: border-box;
+    // transform: translate(0px, 0px);
+  }
+  
+  .sign-img {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    top: 0px;
+    left: 0px;
+    transform: translate(0px, 0px);
+  }
+  
+  .chooseButton {
+    display: inline-block;
+    background-color: indigo;
+    color: white;
+    padding: 0.5rem;
+    font-family: sans-serif;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    margin-left: 1rem;
+  }
+  
