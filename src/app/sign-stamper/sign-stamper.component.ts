@@ -35,9 +35,53 @@ export class SignStamperComponent implements OnInit {
   showGallery = false;
   position: string = 'bottom';
   textStamp: string = '';
+
+  showFrame = false;
+  textValue = '';
+  frameTop = 0;
+  frameLeft = 0;
+
+  
+  DisplayDialogAddTopic: boolean = false;
+
+  showText = false;
+
   constructor(   
     private httpService: HttpConnectService,
     private commonService : CommonService) { }
+
+    showTextFrame(event: MouseEvent) {
+      this.showFrame = true;
+      this.frameTop = event.clientY;
+      this.frameLeft = event.clientX;
+    }
+  
+    confirmText() {
+      // ทำสิ่งที่คุณต้องการเมื่อผู้ใช้ยืนยันข้อความ
+      console.log('ข้อความที่กรอก:', this.textValue);
+  
+      // ซ่อนกล่องพิมข้อความ
+      this.showFrame = false;
+    }
+
+     saveText() {
+      console.log('ข้อความที่กรอก:', this.textValue);
+    }
+
+    calculateWidth(): number {
+      // คำนวณความกว้างของ input จากความยาวของข้อความที่กรอก
+      return this.textValue.length * 10; // ปรับตัวคูณตามความต้องการ
+    }
+
+    openDialog() {
+      this.DisplayDialogAddTopic = true;
+    }
+
+    submitDialog() {
+      console.log(this.textStamp);
+      this.showText = true
+      this.DisplayDialogAddTopic = false;
+    }
     
   get activeIndex(): number {
     return this._activeIndex;

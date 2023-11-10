@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { FileUploadModule } from 'primeng/fileupload';
 import { GalleriaModule } from 'primeng/galleria';
 import { FormsModule } from '@angular/forms';
+import { DialogModule } from 'primeng/dialog';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { FormsModule } from '@angular/forms';
     FileUploadModule,
     GalleriaModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    DialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]
