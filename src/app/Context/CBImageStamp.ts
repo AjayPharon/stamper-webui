@@ -1,4 +1,4 @@
-export interface CBSignImageInterface {
+export interface CBImageStampInterface {
   x: number;
   y: number;
   signContent: string;
@@ -9,8 +9,8 @@ export interface CBSignImageInterface {
   textStamp: string;
 }
 
-export class CBSignImage {
-  constructor() {}
+export class CBImageStamp {
+  constructor() { }
   public signContent: string = '';
   public signWidth: number = -1;
   public signHeight: number = -1;
@@ -20,7 +20,7 @@ export class CBSignImage {
   public documentID: string = '';
   public textStamp: string = '';
 
-  JSONToCB(jsonData : any) {
+  JSONToCB(jsonData: any) {
     this.signContent = jsonData.signContent;
     this.signWidth = jsonData.signWidth;
     this.signHeight = jsonData.signHeight;
@@ -31,8 +31,8 @@ export class CBSignImage {
     this.textStamp = jsonData.textStamp;
   }
 
-  CBTOJSON(CBSign : any){
-		const result: CBSignImageInterface= {} as CBSignImageInterface;
+  CBTOJSON(CBSign: any) {
+    const result: CBImageStampInterface = {} as CBImageStampInterface;
     result.signContent = CBSign.signContent;
     result.signWidth = CBSign.signWidth;
     result.signHeight = CBSign.signHeight;

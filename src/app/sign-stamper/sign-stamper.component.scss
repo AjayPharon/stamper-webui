@@ -70,6 +70,7 @@
     top: 0px;
     left: 0px;
     transform: translate(0px, 0px);
+    border: solid 1px #000000;
   }
   
   .chooseButton {
@@ -92,5 +93,11 @@
     font-size: 25px;
     text-align: center;
     height: auto;
-    line-height: 1;
+    transform: translate(0px, 0px);
+    top: 0px;
+    left: 0px;
+    // line-height: 1;
   }
+  // p {
+  //   margin: 0;
+  // }

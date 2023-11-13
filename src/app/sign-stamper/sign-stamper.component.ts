@@ -1,11 +1,12 @@
 import { CommonService } from './../_services/common.service';
 import { Component, OnInit } from '@angular/core';
-import { CBSignImage } from '../Context/CBSignImage';
+import { CBImageStamp } from '../Context/CBImageStamp';
 import { HttpParams } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 import { HttpConnectService } from '../_services/httpConnectService.service';
 import { environment as env } from '../../environments/environment';
 import { CBDocumentImage } from '../Context/CBDocumentImage';
+import { CBTextStamp } from '../Context/CBTextStamp';
 interface UploadEvent {
   originalEvent: Event;
   files: File[];
@@ -25,7 +26,8 @@ export class SignStamperComponent implements OnInit {
   documentID: string = "";
   _activeIndex: number = 0;
   documentImageList: any[] = [];
-  signImageList: CBSignImage[] = []
+  imageStampList: CBImageStamp[] = []
+  textStampList: CBTextStamp[] = []
   signVisible = false;
   images: any[] = [];
   size: any = null;
@@ -55,18 +57,6 @@ export class SignStamperComponent implements OnInit {
       this.frameTop = event.clientY;
       this.frameLeft = event.clientX;
     }
-  
-    confirmText() {
-      // ทำสิ่งที่คุณต้องการเมื่อผู้ใช้ยืนยันข้อความ
-      console.log('ข้อความที่กรอก:', this.textValue);
-  
-      // ซ่อนกล่องพิมข้อความ
-      this.showFrame = false;
-    }
-
-     saveText() {
-      console.log('ข้อความที่กรอก:', this.textValue);
-    }
 
     calculateWidth(): number {
       // คำนวณความกว้างของ textarea จากความยาวของข้อความที่กรอก
@@ -85,6 +75,14 @@ export class SignStamperComponent implements OnInit {
 
     submitDialog() {
       console.log(this.textStamp);
+      let text_list = new CBTextStamp();
+      text_list.message = this.textStamp
+      text_list.x = this.xPosition;
+      text_list.y = this.yPosition;
+      text_list.pageNumber = this._activeIndex;
+      text_list.documentID = this.documentID;
+      this.textStampList.push(text_list);
+      this.textStamp = '';
       this.showText = true
       this.DisplayDialogAddTopic = false;
     }
@@ -121,7 +119,7 @@ export class SignStamperComponent implements OnInit {
     for (let file of event.files) {
       reader.readAsDataURL(file);
       reader.onload = (event) => {
-        let sign_item = new CBSignImage();
+        let sign_item = new CBImageStamp();
         sign_item.signContent = reader.result!.toString();
         sign_item.signWidth = this.scaleX;
         sign_item.signHeight = this.scaleY;
@@ -130,11 +128,10 @@ export class SignStamperComponent implements OnInit {
         sign_item.pageNumber = this._activeIndex;
         sign_item.documentID = this.documentID;
         sign_item.textStamp =  this.textStamp;
-        this.signImageList.push(sign_item);
+        this.imageStampList.push(sign_item);
       }
     }
-    console.log(this.signImageList);
-    
+    console.log(this.imageStampList);
 
     this.signVisible = true;
   }
@@ -144,17 +141,9 @@ export class SignStamperComponent implements OnInit {
   }
 
   async stamp() {
-    // let ao_item = new CBSignImage();
-    // ao_item.fileContent = this.signBase64.split(',')[1];
-    // ao_item.scaleX = this.scaleX;
-    // ao_item.scaleY = this.scaleY;
-    // ao_item.xPosition = this.xPosition;
-    // ao_item.yPosition = this.yPosition;
-    console.log(this.signImageList.at(0)?.x);
-    console.log(this.signImageList.at(0)?.y);
-    
-    // let payload = new HttpParams().set('requestData', JSON.stringify(this.signImageList))
-    let response = await lastValueFrom(this.httpService.ConnectByPOST_JSON(`${env.localhost}/stamper/stampDocument`, this.signImageList));
+    console.log(this.imageStampList);
+    // let payload = new HttpParams().set('requestData', JSON.stringify(this.signImageList)
+    let response = await lastValueFrom(this.httpService.ConnectByPOST_JSON(`${env.localhost}/stamper/stampDocument`, this.imageStampList));
     if (response != null) {
       console.log('image edited');
     }
@@ -233,18 +222,17 @@ export class SignStamperComponent implements OnInit {
     // }
   }
 
-  clickComponent(component: CBSignImage) {
+  clickComponent(component: CBImageStamp) {
     console.log('click', component);
   }
 
-  onMoveEnd(event: any, component: CBSignImage) {
+  onMoveEnd(event: any, component: any) {
     component.x = event.x;
     component.y = event.y;
     console.log(event.x, event.y);
-    console.log('index : ', this._activeIndex);
   }
 
-  onResizing(event: any, component: CBSignImage) {
+  onResizing(event: any, component: CBImageStamp) {
     this.size = event.size;
     console.log(this.size);
     component.signWidth = event.size.width;

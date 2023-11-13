@@ -12,18 +12,18 @@
                   <img class="img-single" [src]="item" alt="รูปภาพ" (click)="showTextFrame($event)">
 
                   <ng-container *ngIf="showText">
-                    <div class="text-stamp" ngDraggable [bounds]="mybounds" [inBounds]="true">
-                      <p>{{this.textStamp}}</p>
-                    </div>
+                    <!-- <div class="text-stamp" ngDraggable [bounds]="mybounds" [inBounds]="true"> -->
+                      <span *ngFor="let list of this.textStampList" class="text-stamp" ngDraggable [bounds]="mybounds" [inBounds]="true" (endOffset)="onMoveEnd($event, list)">{{list.message}}</span>
+                    <!-- </div> -->
                   </ng-container>
 
                   <ng-container *ngIf="this.signVisible">
-                    <div *ngFor="let component of this.signImageList" ngDraggable ngResizable [rzAspectRatio]="true"
+                    <div *ngFor="let list of this.imageStampList" ngDraggable ngResizable [rzAspectRatio]="true"
                       rzHandles="n,s,e,w,se,sw" class="sign-img" [bounds]="mybounds" [inBounds]="true"
-                      (endOffset)="onMoveEnd($event, component)" (rzResizing)="onResizing($event, component)"
+                      (endOffset)="onMoveEnd($event, list)" (rzResizing)="onResizing($event, list)"
                       [rzMinWidth]="100" [rzMaxWidth]="612" [rzMinHeight]="100" [rzMaxHeight]="792"
-                      (click)="clickComponent(component)">
-                      <img [width]="component.signWidth" [height]="component.signHeight" [src]="component.signContent"
+                      (click)="clickComponent(list)">
+                      <img [width]="list.signWidth" [height]="list.signHeight" [src]="list.signContent"
                         #targetRef>
                     </div>
                   </ng-container>
@@ -97,6 +97,6 @@
 <p-dialog class="pnDialog" header="เพิ่มข้อความ" [(visible)]="DisplayDialogAddTopic" [modal]="true"
   [dismissableMask]="true" [draggable]="false" [resizable]="false" [breakpoints]="{'1200px': '60vw', '800px': '90vw'}"
   [style]="{width: '40vw'}">
-  <input id="stamp" type="text" pInputText [(ngModel)]="textStamp" />
+  <input id="stamp" type="text" pInputText [(ngModel)]="this.textStamp" />
   <p-button label="เพิ่มข้อความ" (click)="submitDialog()"></p-button>
 </p-dialog>
