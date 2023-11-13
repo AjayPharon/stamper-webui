@@ -69,8 +69,14 @@ export class SignStamperComponent implements OnInit {
     }
 
     calculateWidth(): number {
-      // คำนวณความกว้างของ input จากความยาวของข้อความที่กรอก
-      return this.textValue.length * 10; // ปรับตัวคูณตามความต้องการ
+      // คำนวณความกว้างของ textarea จากความยาวของข้อความที่กรอก
+      return this.textStamp.length * 10; // ปรับตัวคูณตามความต้องการ
+    }
+  
+    calculateHeight(): number {
+      // คำนวณความสูงของ textarea จากความยาวของข้อความที่กรอก
+      const lineHeight = 0.5; // ปรับตัวคูณตามความต้องการ
+      return this.textStamp.split('\n').length * lineHeight;
     }
 
     openDialog() {

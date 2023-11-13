@@ -10,9 +10,13 @@
               <ng-template pTemplate="item" let-item>
                 <div class="bg-img" #mybounds>
                   <img class="img-single" [src]="item" alt="รูปภาพ" (click)="showTextFrame($event)">
-                  <div class="text-input" *ngIf="showText" ngDraggable [bounds]="mybounds" [inBounds]="true">
-                    <p>ข้อความจาก Dialog {{this.textStamp}}</p>
-                  </div>
+
+                  <ng-container *ngIf="showText">
+                    <div class="text-stamp" ngDraggable [bounds]="mybounds" [inBounds]="true">
+                      <p>{{this.textStamp}}</p>
+                    </div>
+                  </ng-container>
+
                   <ng-container *ngIf="this.signVisible">
                     <div *ngFor="let component of this.signImageList" ngDraggable ngResizable [rzAspectRatio]="true"
                       rzHandles="n,s,e,w,se,sw" class="sign-img" [bounds]="mybounds" [inBounds]="true"
@@ -83,7 +87,7 @@
         <p-button label="เพิ่มข้อความ" (click)="openDialog()"></p-button>
       </div>
       <div class="col mt-5">
-          <p-button label="Stamp" (click)="stamp()"></p-button>
+        <p-button label="Stamp" (click)="stamp()"></p-button>
       </div>
     </div>
   </div>
