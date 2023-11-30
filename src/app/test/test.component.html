@@ -1,0 +1,86 @@
+<button (click)="configStamp()">Config Stamp</button>
+
+<p-dialog
+  class="pnDialog"
+  header="เพิ่ม Stamp"
+  [(visible)]="DisplayDialogConfig"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="true"
+  [breakpoints]="{ '1440px': '60vw', '1000px': '85vw' }"
+  [style]="{ width: '50vw', height: '65vh' }"
+  (onShow)="onDialogShow()"
+>
+  <div class="d-flex flex-wrap justify-content-center h-75">
+    <div class="d-flex flex-column justify-content-center">
+      <div class="mb-2">
+        <p-checkbox
+          [(ngModel)]="gridOption"
+          [binary]="true"
+          inputId="gridOption"
+          (onChange)="drawBorder()"
+        ></p-checkbox>
+        <label for="gridOption">กรอบข้อความ</label>
+      </div>
+      <div class="bgCanvas mb-2">
+        <canvas
+          #bgCanvas
+          id="bgCanvas"
+          width="800"
+          height="300"
+          style="border: 1px solid #282020"
+          (click)="onClick($event)"
+        ></canvas>
+        <div class="componentCanvas">
+          <canvas id="fgCanvas" width="800" height="300" hidden></canvas>
+          <div
+            class="componentCanvas"
+            *ngFor="let list of this.stampContentList; let i = index"
+            [ngDraggable]="draggable"
+            [position]="{ x: list.x, y: list.y }"
+            [bounds]="bgCanvas"
+            [inBounds]="true"
+            (endOffset)="onMoveEnd($event, list)"
+          >
+            <p
+              id="myParagraph"
+              class="stampContent"
+              contenteditable="true"
+              (input)="onContentChange($event, list)"
+              [style.width.px]="getMaxLineWidth(list.content, '36px Arial')"
+              [style.fontWeight]="list.isBold ? 'bold' : 'normal'"
+              [style.fontStyle]="list.isItalic ? 'italic' : 'normal'"
+              [style.color]="list.color"
+              (focus)="list.isShowTools = true"
+              (blur)="list.isShowTools = false"
+            ></p>
+
+            <div class="d-flex justify-content-end" *ngIf="list.isShowTools">
+              <p-colorPicker [(ngModel)]="list.color"></p-colorPicker>
+              <button style="font-size: 1rem" (click)="boldText(list)">
+                B
+              </button>
+              <button style="font-size: 1rem" (click)="italicText(list)">
+                I
+              </button>
+              <i
+                class="pi pi-trash"
+                style="color: red; font-size: 1.5rem"
+                (click)="delete(i)"
+              ></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        id="submitBtn"
+        class="pn-submit align-self-end"
+        label="บันทีก Stamp"
+        (click)="combinedCanvas()"
+      >
+        บันทึก Stamp
+      </button>
+    </div>
+  </div>
+</p-dialog>

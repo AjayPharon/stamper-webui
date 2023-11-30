@@ -6,7 +6,7 @@ export interface CBImageStampInterface {
   signHeight: number;
   pageNumber: number;
   documentID: string;
-  textStamp: string;
+  isVisible: boolean;
 }
 
 export class CBImageStamp {
@@ -18,7 +18,7 @@ export class CBImageStamp {
   public y: number = -1;
   public pageNumber: number = -1;
   public documentID: string = '';
-  public textStamp: string = '';
+  public isVisible: boolean = false
 
   JSONToCB(jsonData: any) {
     this.signContent = jsonData.signContent;
@@ -28,7 +28,6 @@ export class CBImageStamp {
     this.y = jsonData.y;
     this.pageNumber = jsonData.pageNumber;
     this.documentID = jsonData.documentID;
-    this.textStamp = jsonData.textStamp;
   }
 
   CBTOJSON(CBSign: any) {
@@ -40,7 +39,6 @@ export class CBImageStamp {
     result.y = CBSign.y;
     result.pageNumber = CBSign.pageNumber;
     result.documentID = CBSign.documentID;
-    result.textStamp = CBSign.textStamp;
     return result;
   }
 }

@@ -1,0 +1,57 @@
+.whiteboard {
+  border: 1px solid #000000;
+}
+
+.pn-submit {
+  color: #ffffff;
+  background: #3B82F6;
+  border: 1px solid #3B82F6;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  border-radius: 6px;
+  width: 285px;
+  height: 6vh;
+}
+.bgCanvas {
+  width: 800px;
+  height: 300px;
+  top: 0;
+  left: 0;
+  transform: translate(0,0);
+}
+.componentCanvas {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+}
+
+.add-text-btn {
+  border-radius: 10px;
+  height: 5vh;
+  border: none;
+}
+
+.custom-input {
+  padding: 0;
+  border: none;
+  font-size: 36px;
+  background: transparent;
+  text-align: center;
+}
+
+.custom-input:hover {
+  cursor: move;
+}
+
+.custom-input:focus {
+  cursor: text;
+}
+
+.stampContent {
+  border: 1px solid #000055;
+  font: 36px Arial;
+  width: 750px;
+  text-align: center;
+}

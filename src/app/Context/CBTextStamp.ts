@@ -4,6 +4,7 @@ export interface CBTextStampInterface {
     pageNumber: number;
     documentID: string;
     message: string;
+    isVisible: boolean;
 }
 
 export class CBTextStamp {
@@ -13,6 +14,7 @@ export class CBTextStamp {
     public pageNumber: number = -1;
     public documentID: string = '';
     public message: string = '';
+    public isVisible: boolean = false;
 
     JSONToCB(jsonData: any) {
         this.x = jsonData.x;

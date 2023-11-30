@@ -21,14 +21,6 @@
     z-index: 1;
   }
   
-  .img-single {
-    max-width: 100%;
-    max-height: 100%;
-    // transform: scale(0.5);
-    // display: block;
-    // margin: 0 auto;
-  }
-  
   html, body { height: 100%; }
   body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   
@@ -45,32 +37,42 @@
     left: 0;
     transform: translate(0%, 0%);
   }
+  
   .bg-img {
-    width: 612px;
-    height: 792px;
-    border: solid 1px #000000;
-    // position: relative;
+    width: 595px;
+    height: 842px;
+    // border: solid 1px #000000;
     top: 0;
     left: 0;
     cursor: move;
-    display: inline-flex;
+    // display: inline-flex;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    background: #fff;
     z-index: 1;
-    box-sizing: border-box;
+    overflow: auto;
+    background-color: darkgrey;
+    // box-sizing: border-box;
     // transform: translate(0px, 0px);
+  }
+
+  .img-single {
+    max-width: 100%;
+    max-height: 100%;
+    // margin-bottom: 15px;
+    // transform: scale(0.5);
+    // display: block;
+    // margin: 0 auto;
   }
   
   .sign-img {
     position: absolute;
-    width: 100px;
-    height: 100px;
-    top: 0px;
-    left: 0px;
+    // width: 100px;
+    // height: 100px;
+    z-index: 100;
+    top: 0%;
+    left: 0%;
     transform: translate(0px, 0px);
-    border: solid 1px #000000;
+    // border: solid 1px #000000;
   }
   
   .chooseButton {
@@ -87,7 +89,7 @@
   
   .text-stamp {
     position: absolute;
-    border: 1px solid black;
+    // border: 1px solid black;
     background-color: transparent;
     color: black;
     font-size: 25px;
@@ -96,8 +98,26 @@
     transform: translate(0px, 0px);
     top: 0px;
     left: 0px;
-    // line-height: 1;
+    line-height: 1;
+    font-family: 'THSarabun';
+    padding: 0;
+    margin: 0;
+    text-align: end;
   }
-  // p {
-  //   margin: 0;
-  // }
+
+  .example-viewport {
+    height: 842px;
+    width: 595px;
+    border: 1px solid black;
+    align-items: center;
+    background-color:darkgrey
+  }
+
+  .cdk-virtual-scroll-content-wrapper::-webkit-scrollbar {
+    background-color: transparent; /* กำหนดสีพื้นหลังให้เป็น transparent */
+  }
+
+  .overlayStamp {
+    z-index: 5;
+    position: absolute;
+  }

@@ -12,11 +12,17 @@ import { GalleriaModule } from 'primeng/galleria';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { TestComponent } from './test/test.component';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+import { CheckboxModule } from 'primeng/checkbox';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SignStamperComponent
+    SignStamperComponent,
+    TestComponent
   ],
   imports: [
     BrowserModule,
@@ -29,7 +35,11 @@ import { InputTextModule } from 'primeng/inputtext';
     HttpClientModule,
     FormsModule,
     DialogModule,
-    InputTextModule
+    InputTextModule,
+    ScrollingModule,
+    CheckboxModule,
+    DragDropModule,
+    ColorPickerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
