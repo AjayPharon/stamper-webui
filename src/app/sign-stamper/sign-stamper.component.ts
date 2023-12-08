@@ -1,414 +1,580 @@
-import { CBImageStamp } from './../Context/CBImageStamp';
-import { CommonService } from "./../_services/common.service";
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
-import { lastValueFrom } from "rxjs";
-import { HttpConnectService } from "../_services/httpConnectService.service";
-import { environment as env } from "../../environments/environment";
-import { CBDocumentImage } from "../Context/CBDocumentImage";
-import { CBTextStamp } from "../Context/CBTextStamp";
-import { CBStamp } from "../Context/CBStamp";
+import {CBImageStamp} from '../Context/CBImageStamp';
+import {CommonService} from "../_services/common.service";
+import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
+import {lastValueFrom} from "rxjs";
+import {HttpConnectService} from "../_services/httpConnectService.service";
+import {environment as env} from "../../environments/environment";
+import {CBDocumentImage} from "../Context/CBDocumentImage";
+import {CBTextStamp} from "../Context/CBTextStamp";
+import {CBStamp} from "../Context/CBStamp";
+import {HttpParams} from "@angular/common/http";
+import {CBTemplateStamp} from "../Context/CBTemplateStamp";
+import {CBText} from "../Context/CBText";
+import {CBImage} from "../Context/CBImage";
+import {CBLabel} from "../Context/CBLabel";
+import {CBCustomStamp} from "../Context/CBCustomStamp";
+
 interface UploadEvent {
-  originalEvent: Event;
-  files: File[];
+    originalEvent: Event;
+    files: File[];
 }
 
 @Component({
-  selector: "app-sign-stamper",
-  templateUrl: "./sign-stamper.component.html",
-  styleUrls: ["./sign-stamper.component.scss"],
+    selector: "app-sign-stamper",
+    templateUrl: "./sign-stamper.component.html",
+    styleUrls: ["./sign-stamper.component.scss"],
 })
 export class SignStamperComponent implements OnInit {
-  xPosition: number = 0;
-  yPosition: number = 0;
-  scaleX: number = 100;
-  scaleY: number = 100;
-  documentID: string = "";
-  _activeIndex: number = 0;
-  documentImageList: any[] = [];
-  imageStampList: CBImageStamp[] = [];
-  textStampList: CBTextStamp[] = [];
-  signVisible = false;
-  images: any[] = [];
-  size: any = null;
-  zoom: number = 1.0;
-  showImage = false;
-  degree: number = 0;
-  showGallery = false;
-  position: string = "bottom";
-  textStamp: string = "";
+    x: number = 0;
+    y: number = 0;
+    width: number = 100;
+    height: number = 100;
+    documentID: string = "";
+    _activeIndex: number = 0;
+    documentImageList: any[] = [];
+    imageList: CBImageStamp[] = [];
+    textList: CBTextStamp[] = [];
+    images: any[] = [];
+    size: any = null;
+    position: string = "bottom";
+    textStamp: string = "";
+    showFrame = false;
+    frameTop = 0;
+    frameLeft = 0;
+    DisplayDialogAddTopic: boolean = false;
+    displayStampDialog: boolean = false;
+    displayChooseDialog: boolean = false;
+    displayChooseTemplate: boolean = false;
+    displayDialog: boolean = false;
+    templateStampList: CBTemplateStamp[] = [];
+    zoom: number = 1.0;
+    showImage = false;
+    degree: number = 0;
+    showGallery = false;
+    signVisible = false;
+    canvasWidth = 800;
+    canvasHeight = 300;
 
-  organizationStamp: string = '';
-  receiveNumber: string = '';
 
-  showFrame = false;
-  textValue = "";
-  frameTop = 0;
-  frameLeft = 0;
+    templateName: string = "";
+    gridOption: boolean = false;
+    textStampList: CBText[] = [];
+    imageStampList: CBImage[] = [];
+    labelStampList: CBLabel[] = [];
+    fontSizes: number[] = [10, 12, 14, 16, 18, 20, 40, 50, 60];
 
-  DisplayDialogAddTopic: boolean = false;
+    @ViewChild("imageListContainer") imageListContainer!: ElementRef;
+    @ViewChild('myGalleria') galleria!: ElementRef;
+    @ViewChild("imgstamp") imgstamp!: ElementRef;
 
-  showText = false;
-
-  canvasWidth = 400;
-  canvasHeight = 150;
-
-  @ViewChild("imageListContainer") imageListContainer!: ElementRef;
-  @ViewChild('myGalleria') galleria!: ElementRef;
-  @ViewChild("imgstamp") imgstamp!: ElementRef;
-
-  constructor(
-    private httpService: HttpConnectService,
-    private commonService: CommonService
-  ) {}
-
-  ngOnInit() {}
-
-  ngAfterViewInit(): void {
-    // this.detectScrolling();
-    // this.drawCanvas();
-  }
-
-  // drawMultilineText(text: string, maxWidth: number) {
-  //   const canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
-  //   const ctx = canvas.getContext('2d')!;
-  //   // Set font
-  //   ctx.font = '16px THSarabun';
-  //   // ctx.textAlign = 'center';
-  //   ctx.fillStyle = 'black';
-
-  //   // Split the text into words
-  //   const words = text.split(' ');
-
-  //   // Initialize variables
-  //   let currentLine = '';
-  //   let lines = [];
-
-  //   for (const word of words) {
-  //     const testLine = currentLine + word + ' ';
-  //     const { width } = ctx.measureText(testLine);
-
-  //     if (width < maxWidth) {
-  //       currentLine = testLine;
-  //     } else {
-  //       lines.push(currentLine.trim());
-  //       currentLine = word + ' ';
-  //     }
-  //   }
-
-  //   // Add the last line
-  //   lines.push(currentLine.trim());
-
-  //   // Draw each line at the specified y-coordinate
-  //   const lineHeight = 20;
-  //   let y = this.canvasHeight / 2 - (lines.length * lineHeight) / 2;
-
-  //   lines.forEach((line) => {
-  //     ctx.textAlign = 'center';
-  //     ctx.fillText(line, this.canvasHeight / 2, y-30);
-  //     y += lineHeight;
-  //   });
-  // }
-   drawMultilineText(text: string, maxWidth: number) {
-    const canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
-    const ctx = canvas.getContext('2d')!;
-    // Set font
-    ctx.font = 'bold 18px Arial';
-    ctx.fillStyle = 'black';
-
-    // Split the text into words
-    const words = text.split(' ');
-
-    // Initialize variables
-    let currentLine = '';
-    let lines = [];
-
-    for (const word of words) {
-      const testLine = currentLine + word + ' ';
-      const { width } = ctx.measureText(testLine);
-
-      if (width < maxWidth) {
-        currentLine = testLine;
-      } else {
-        lines.push(currentLine.trim());
-        currentLine = word + ' ';
-      }
+    constructor(
+        private httpService: HttpConnectService,
+        private commonService: CommonService
+    ) {
     }
 
-    // Add the last line
-    lines.push(currentLine.trim());
-
-    // Calculate total text height
-    const lineHeight = 25;
-    const totalTextHeight = lines.length * lineHeight;
-
-    // Calculate starting y-coordinate for center alignment
-    let y = canvas.height / 2 - totalTextHeight / 2;
-
-    // Draw each line at the specified y-coordinate
-    lines.forEach(line => {
-      // Calculate the x-coordinate for center alignment
-      const x = canvas.width / 2 - ctx.measureText(line).width / 2;
-      
-      ctx.fillText(line, x, y-25);
-      y += lineHeight;
-    });
-  }
-
-
-  drawStamp(color = "red"): string {
-    const canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
-    const ctx = canvas.getContext('2d')!;
-    const resolution = window.devicePixelRatio || 1;
-    console.log('res',resolution);
-    
-    let dataUrl = '';
-    canvas.width = this.canvasWidth * resolution;
-    canvas.height = this.canvasHeight * resolution;
-    ctx.scale(resolution, resolution);
-    
-    
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 5;
-    ctx.strokeRect(0, 0, this.canvasWidth, this.canvasHeight);
-    ctx.fillStyle = 'red';
-    this.drawMultilineText("มหาวิทยาลัยเกษตรศาสตร์ วิทยาเขตบางเขน ภาควิชาวิศวกรรมคอมพิวเตอร์", this.canvasWidth - 50) 
-    ctx.font = '16px Arial';
-    ctx.fillStyle = 'red'
-    ctx.fillText('เลขที่รับ', 30, 70);
-    ctx.fillText('00000', 150, 70);
-    ctx.fillText('วันที่รับ', 30, 100);
-    ctx.fillText('01 / 01 / 2000', 150, 100);
-    ctx.fillText('เวลาที่รับ', 30, 130);
-    ctx.fillText('00.00', 150, 130);
-
-    dataUrl = canvas.toDataURL('image');
-    const downloadLink = document.createElement("a");
-    downloadLink.href = dataUrl;
-    downloadLink.download = "canvas_image.png";
-    downloadLink.click();
-    return dataUrl;
-  }
-
-  addStamp() {
-    let sign_item = new CBImageStamp();
-        sign_item.signContent = this.drawStamp();
-        sign_item.signWidth = 400
-        sign_item.signHeight = 150
-        sign_item.x = this.xPosition;
-        sign_item.y = this.yPosition;
-        sign_item.pageNumber = this._activeIndex;
-        sign_item.documentID = this.documentID;
-        sign_item.isVisible = true;
-        this.imageStampList.push(sign_item);
-  }
-
-  detectScrolling(): void {
-    const containerElement: HTMLElement =
-      this.imageListContainer.nativeElement();
-    containerElement.addEventListener("scroll", () => {
-      const visibleIndex = Math.floor(
-        containerElement.scrollTop / containerElement.clientHeight
-      );
-      this._activeIndex = visibleIndex;
-      console.log("Visible Image Index:", visibleIndex);
-    });
-  }
-
-  showTextFrame(event: MouseEvent) {
-    this.showFrame = true;
-    this.frameTop = event.clientY;
-    this.frameLeft = event.clientX;
-  }
-
-  calculateWidth(): number {
-    return this.textStamp.length * 10;
-  }
-
-  calculateHeight(): number {
-    const lineHeight = 0.5;
-    return this.textStamp.split("\n").length * lineHeight;
-  }
-
-  openDialog() {
-    this.DisplayDialogAddTopic = true;
-  }
-
-  submitDialog() {
-    console.log(this.textStamp);
-    let text_list = new CBTextStamp();
-    text_list.message = this.textStamp;
-    text_list.x = this.xPosition;
-    text_list.y = this.yPosition;
-    text_list.pageNumber = this._activeIndex;
-    text_list.documentID = this.documentID;
-    text_list.isVisible = true;
-    this.textStampList.push(text_list);
-    this.textStamp = "";
-    this.DisplayDialogAddTopic = false;
-  }
-
-  get activeIndex(): number {
-    return this._activeIndex;
-  }
-
-  set activeIndex(newValue) {
-    if (this.images && 0 <= newValue && newValue <= this.images.length - 1) {
-      this._activeIndex = newValue;
+    ngOnInit() {
     }
-  }
 
-  responsiveOptions: any[] = [
-    {
-      breakpoint: "1024px",
-      numVisible: 5,
-    },
-    {
-      breakpoint: "768px",
-      numVisible: 3,
-    },
-    {
-      breakpoint: "560px",
-      numVisible: 1,
-    },
-  ];
+    ngAfterViewInit(): void {
+        // this.detectScrolling();
+        // this.drawCanvas();
+    }
 
-  onFileSelect(event: UploadEvent) {
-    const reader = new FileReader();
-    for (let file of event.files) {
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
+    async chooseTemplate() {
+        this.displayDialog = true;
+        await this.getTemplate();
+
+    }
+
+    async getTemplate() {
+        let payload = new HttpParams();
+        let response = await lastValueFrom(
+            this.httpService.ConnectByPOST(`${env.localhost}/stamper/getTemplate`, payload)
+        );
+        console.log('response', response);
+        console.log('response length', response.length)
+        this.templateStampList = response;
+    }
+
+    openConfigDialog() {
+        this.displayChooseDialog = true;
+        this.displayStampDialog = false;
+        this.displayChooseTemplate = false;
+    }
+
+    showTextFrame(event: MouseEvent) {
+        this.showFrame = true;
+        this.frameTop = event.clientY;
+        this.frameLeft = event.clientX;
+    }
+
+    openDialog() {
+        this.DisplayDialogAddTopic = true;
+    }
+
+    submitDialog() {
+        let text_list = new CBTextStamp();
+        text_list.message = this.textStamp;
+        text_list.x = this.x;
+        text_list.y = this.y;
+        text_list.pageNumber = this._activeIndex;
+        text_list.documentID = this.documentID;
+        text_list.isVisible = true;
+        this.textList.push(text_list);
+        this.textStamp = "";
+        this.DisplayDialogAddTopic = false;
+    }
+
+    get activeIndex(): number {
+        return this._activeIndex;
+    }
+
+    set activeIndex(newValue) {
+        if (this.images && 0 <= newValue && newValue <= this.images.length - 1) {
+            this._activeIndex = newValue;
+        }
+    }
+
+    responsiveOptions: any[] = [
+        {
+            breakpoint: "1024px",
+            numVisible: 5,
+        },
+        {
+            breakpoint: "768px",
+            numVisible: 3,
+        },
+        {
+            breakpoint: "560px",
+            numVisible: 1,
+        },
+    ];
+
+    onFileSelect(event: UploadEvent) {
+        const reader = new FileReader();
+        for (let file of event.files) {
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                let sign_item = new CBImageStamp();
+                sign_item.signContent = reader.result!.toString();
+                sign_item.signWidth = this.width;
+                sign_item.signHeight = this.height;
+                sign_item.x = this.x;
+                sign_item.y = this.y;
+                sign_item.pageNumber = this._activeIndex;
+                sign_item.documentID = this.documentID;
+                sign_item.isVisible = true;
+                this.imageList.push(sign_item);
+            };
+        }
+    }
+
+    onFileRemove(event: UploadEvent) {
+        event.files.pop();
+    }
+
+    async stamp() {
+        let stampList = new CBStamp();
+        stampList.documentID = this.documentID;
+        stampList.imageStampList = this.imageList;
+        stampList.textStampList = this.textList;
+        let response = await lastValueFrom(
+            this.httpService.ConnectByPOST_JSON(
+                `${env.localhost}/stamper/stampDocument`,
+                stampList
+            )
+        );
+        if (response != null) {
+            console.log("image edited");
+        }
+    }
+
+    documentUpload(event: UploadEvent) {
+        const reader = new FileReader();
+        for (let file of event.files) {
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                this.upload(file, 100);
+            };
+        }
+    }
+
+    async upload(file: File, ai_letterType: number) {
+        const methodName = "multiupload";
+        console.log("START " + methodName);
+        let urlPath: string = env.localhost + "/stamper/convert";
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("filename", file.name);
+        formData.append("letterType", ai_letterType.toString());
+        console.log("ทดสอบ", formData.getAll("file"));
+        try {
+            const response = await this.httpService
+                .ConnectByPOSTFormData(urlPath, formData)
+                .toPromise();
+            console.log("Upload response:", response);
+            let documentCB = new CBDocumentImage(this.commonService);
+            documentCB.JSONToCB(response);
+            this.documentID = documentCB.documentID;
+            this.documentImageList = documentCB.imageBase64;
+            console.log("id", this.documentID);
+        } catch (error) {
+            console.error("Upload error:", error);
+        }
+    }
+
+    showNextImage() {
+        this._activeIndex = (this._activeIndex + 1) % this.documentImageList.length;
+        this.visibleImageStamp();
+        this.visibleTextStamp();
+    }
+
+    showPreviousImage() {
+        this._activeIndex = (this._activeIndex - 1 + this.documentImageList.length) % this.documentImageList.length;
+        this.visibleImageStamp();
+        this.visibleTextStamp();
+    }
+
+    visibleImageStamp() {
+        for (let i = 0; i < this.imageList.length; i++) {
+            if (this.imageList.at(i)!.pageNumber === this._activeIndex) {
+                this.imageList.at(i)!.isVisible = true;
+            } else {
+                this.imageList.at(i)!.isVisible = false;
+            }
+        }
+    }
+
+    visibleTextStamp() {
+        for (let i = 0; i < this.textList.length; i++) {
+            if (this.textList.at(i)!.pageNumber === this._activeIndex) {
+                this.textList.at(i)!.isVisible = true;
+            } else {
+                this.textList.at(i)!.isVisible = false;
+            }
+        }
+    }
+
+    onMoveEnd(event: any, component: any) {
+        component.x = event.x;
+        component.y = event.y;
+    }
+
+    onResizing(event: any, component: CBImageStamp) {
+        component.signWidth = event.size.width;
+        component.signHeight = event.size.height;
+    }
+
+    onResizingTemplate(event: any, component: CBImage) {
+        component.signWidth = event.size.width;
+        component.signHeight = event.size.height;
+    }
+
+    toggleBorder() {
+        const button = document.getElementById("borderBtn")!;
+        button.classList.toggle("active");
+        this.gridOption = !this.gridOption;
+        this.drawBorder();
+    }
+
+    drawBorder() {
+        const canvas = <HTMLCanvasElement>document.getElementById("bgCanvas");
+        const ctx = canvas.getContext("2d")!;
+        if (this.gridOption) {
+            this.drawStroke(ctx);
+        } else {
+            this.clearStroke(ctx);
+        }
+    }
+
+    drawStroke(ctx: CanvasRenderingContext2D) {
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(this.x, this.y, this.canvasWidth, this.canvasHeight);
+    }
+
+    clearStroke(ctx: CanvasRenderingContext2D) {
+        ctx.clearRect(this.x, this.y, this.canvasWidth, this.canvasHeight);
+    }
+
+    addText() {
+        let stampContent = new CBText();
+        stampContent.editable = true;
+        stampContent.content = "";
+        stampContent.x = this.x;
+        stampContent.y = this.y;
+        stampContent.isBold = false;
+        stampContent.isItalic = false;
+        stampContent.showEdit = false;
+        stampContent.showTools = false;
+        stampContent.fontSize = 16;
+        this.textStampList.push(stampContent);
+    }
+
+    addImage(event: any) {
+        const reader = new FileReader();
+        for (let file of event.target.files) {
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                let image_item = new CBImage();
+                image_item.signContent = reader.result!.toString();
+                image_item.signWidth = this.width;
+                image_item.signHeight = this.height;
+                image_item.x = this.x;
+                image_item.y = this.y;
+                this.imageStampList.push(image_item);
+            };
+        }
+    }
+
+    addLabel() {
+        let labelItem = new CBLabel();
+        labelItem.content = "";
+        labelItem.editable = true;
+        labelItem.isBold = false;
+        labelItem.isItalic = false;
+        labelItem.label = "";
+        labelItem.showEdit = false;
+        labelItem.showTools = false;
+        labelItem.xContent = 250;
+        labelItem.yContent = 0;
+        labelItem.x = 0;
+        labelItem.y = 0;
+        labelItem.fontSize = 16;
+        this.labelStampList.push(labelItem);
+    }
+
+    showEdit(component: any) {
+        component.showEdit = true;
+    }
+
+    hideEdit(component: any) {
+        component.showEdit = false;
+    }
+
+    onContentChange(event: Event, component: any) {
+        component.content = (event.target as HTMLParagraphElement).innerText || "";
+        const pElement = event.target as HTMLParagraphElement;
+        const newWidth = this.getMaxLineWidth(
+            component.content,
+            `${component.fontSize}px Arial`
+        );
+        pElement.style.width = newWidth + "px";
+    }
+
+    onLabelChange(event: Event, component: any) {
+        component.label = (event.target as HTMLParagraphElement).innerText || "";
+        // const pElement = event.target as HTMLParagraphElement;
+        // const newWidth = this.getMaxLineWidth(component.content, "36px Arial");
+        // pElement.style.width = newWidth + "px";
+    }
+
+    getMaxLineWidth(text: string, font: string): number {
+        const lines = text.split("\n");
+        let maxWidth = 0;
+        for (const line of lines) {
+            const width = this.getTextWidth(line, font);
+            maxWidth = Math.max(maxWidth, width);
+        }
+        if (maxWidth <= 10) {
+            return 200;
+        } else {
+            return maxWidth;
+        }
+    }
+
+    getTextWidth(text: string, font: string): number {
+        const canvas = <HTMLCanvasElement>document.createElement("canvas");
+        const context = canvas.getContext("2d")!;
+        if (!context) {
+            return 150;
+        }
+        context.font = font;
+        const metrics = context.measureText(text);
+        return metrics.width + 5;
+    }
+
+    editMode(component: any) {
+        component.showTools = !component.showTools;
+        component.editable = true;
+    }
+
+    boldText(component: any) {
+        component.isBold = !component.isBold;
+        console.log(this.textStampList);
+    }
+
+    italicText(component: any) {
+        component.isItalic = !component.isItalic;
+    }
+
+    delete(component: any) {
+        this.textStampList = this.textStampList.filter((_, i) => i !== component);
+    }
+
+    deleteImage(component: any) {
+        this.imageStampList = this.imageStampList.filter((_, i) => i !== component);
+    }
+
+    deleteLabel(component: any) {
+        this.labelStampList = this.labelStampList.filter((_, i) => i !== component);
+    }
+
+    async combinedCanvas() {
+        const fgCanvas = <HTMLCanvasElement>document.getElementById("fgCanvas");
+        const ctx = fgCanvas.getContext("2d")!;
+        ctx.textBaseline = "top";
+        this.drawContent(ctx);
+        this.drawLabel(ctx);
+        await this.drawImg(ctx);
+        const combinedCanvas = document.createElement("canvas");
+        combinedCanvas.width = this.canvasWidth;
+        combinedCanvas.height = this.canvasHeight;
+        const combinedCtx = combinedCanvas.getContext("2d")!;
+        const bgCanvas = <HTMLCanvasElement>document.getElementById("bgCanvas");
+        // await this.drawBG(bgCanvas, combinedCtx);
+        combinedCtx.drawImage(bgCanvas, this.x, this.y);
+        combinedCtx.drawImage(fgCanvas, this.x, this.y);
+        const dataUrl = combinedCanvas.toDataURL("image/png");
+        this.saveStampTemplate(dataUrl);
+
         let sign_item = new CBImageStamp();
-        sign_item.signContent = reader.result!.toString();
-        sign_item.signWidth = this.scaleX;
-        sign_item.signHeight = this.scaleY;
-        sign_item.x = this.xPosition;
-        sign_item.y = this.yPosition;
+        sign_item.signContent = dataUrl;
+        sign_item.signWidth = 800;
+        sign_item.signHeight = 300;
+        sign_item.x = this.x;
+        sign_item.y = this.y;
         sign_item.pageNumber = this._activeIndex;
         sign_item.documentID = this.documentID;
         sign_item.isVisible = true;
-        this.imageStampList.push(sign_item);
-      };
+        this.imageList.push(sign_item);
+        this.displayDialog = false;
     }
-    console.log(this.imageStampList);
 
-    // this.visibleStamp();
-  }
-
-  onFileRemove(event: UploadEvent) {
-    event.files.pop();
-  }
-
-  async stamp() {
-    // let payload = new HttpParams().set('requestData', JSON.stringify(this.signImageList)
-    let stampList = new CBStamp();
-    stampList.documentID = this.documentID;
-    stampList.imageStampList = this.imageStampList;
-    stampList.textStampList = this.textStampList;
-    console.log(stampList);
-
-    let response = await lastValueFrom(
-      this.httpService.ConnectByPOST_JSON(
-        `${env.localhost}/stamper/stampDocument`,
-        stampList
-      )
-    );
-    if (response != null) {
-      console.log("image edited");
+    drawContent(ctx: CanvasRenderingContext2D) {
+        ctx.clearRect(this.x, this.y, this.canvasWidth, this.canvasHeight);
+        for (let list of this.textStampList) {
+            ctx.fillStyle = `${list.color}`;
+            ctx.font = `${list.isBold ? "bold" : ""} ${
+                list.isItalic ? "italic" : ""
+            } ${list.fontSize}px Arial`;
+            const paragraph = document.getElementById("textStamp")!;
+            list.height = paragraph.offsetHeight;
+            list.width = paragraph.offsetWidth;
+            let lines = list.content.split("\n");
+            if (lines.length > 0) {
+                //   for (let i = 0; i < lines.length; i++) {
+                //     ctx.textBaseline = "top";
+                //     ctx.fillText(lines[i], list.x, list.y + i * 25);
+                // }
+                this.drawMultilineText(
+                    ctx,
+                    list.content,
+                    list.x,
+                    list.y,
+                    list.width,
+                    list.height,
+                    list.fontSize + 7
+                );
+            } else {
+                ctx.fillText(list.content, list.x, list.y);
+            }
+        }
     }
-  }
 
-  documentUpload(event: UploadEvent) {
-    const reader = new FileReader();
-    for (let file of event.files) {
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        this.upload(file, 100);
-      };
+    async drawImg(ctx: CanvasRenderingContext2D): Promise<void> {
+        const loadImage = (
+            src: string,
+            x: number,
+            y: number,
+            width: number,
+            height: number
+        ): Promise<void> => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    ctx.drawImage(img, x, y, width, height);
+                    resolve();
+                };
+            });
+        };
+        const loadImagePromises: Promise<void>[] = [];
+        for (const list of this.imageStampList) {
+            const promise = loadImage(
+                list.signContent,
+                list.x,
+                list.y,
+                list.signWidth,
+                list.signHeight
+            );
+            loadImagePromises.push(promise);
+        }
+        await Promise.all(loadImagePromises);
     }
-  }
 
-  async upload(file: File, ai_letterType: number) {
-    const methodName = "multiupload";
-    console.log("START " + methodName);
-    let urlPath: string = env.localhost + "/stamper/convert";
-    let formData = new FormData();
-    formData.append("file", file);
-    formData.append("filename", file.name);
-    formData.append("letterType", ai_letterType.toString());
-    console.log("ทดสอบ", formData.getAll("file"));
-    try {
-      const response = await this.httpService
-        .ConnectByPOSTFormData(urlPath, formData)
-        .toPromise();
-      console.log("Upload response:", response);
-      let documentCB = new CBDocumentImage(this.commonService);
-      documentCB.JSONToCB(response);
-      this.documentID = documentCB.documentID;
-      this.documentImageList = documentCB.imageBase64;
-      console.log("id", this.documentID);
-    } catch (error) {
-      console.error("Upload error:", error);
+    drawLabel(ctx: CanvasRenderingContext2D) {
+        for (let list of this.labelStampList) {
+            ctx.fillStyle = `${list.color}`;
+            ctx.font = `${list.isBold ? "bold" : ""} ${
+                list.isItalic ? "italic" : ""
+            } ${list.fontSize}px Arial`;
+            ctx.fillText(list.label, list.x, list.y + 5);
+            ctx.fillText(list.content, list.xContent, list.yContent + 5);
+        }
     }
-  }
 
-  documentDelete() {
-    this.documentImageList = []
-  }
-
-  showNextImage() {
-    // this._activeIndex++;
-    this._activeIndex = (this._activeIndex + 1) % this.documentImageList.length;
-    this.visibleImageStamp();
-    this.visibleTextStamp();
-  }
-
-  showPreviousImage() {
-    // this._activeIndex--;
-    this._activeIndex = (this._activeIndex - 1 + this.documentImageList.length) % this.documentImageList.length;
-    this.visibleImageStamp();
-    this.visibleTextStamp();
-    // console.log(this.imageStampList.at);
-    
-  }
-
-  visibleImageStamp() {
-    for (let i = 0; i < this.imageStampList.length; i++) {
-      if (this.imageStampList.at(i)!.pageNumber === this._activeIndex) {
-        this.imageStampList.at(i)!.isVisible = true;
-        // imgStamp.style.transform = `translate(${this.imageStampList.at(i)!.x}px, ${this.imageStampList.at(i)!.y}px)`;
-
-      } else {
-        this.imageStampList.at(i)!.isVisible = false;
-      }
+    drawMultilineText(
+        ctx: CanvasRenderingContext2D,
+        text: string,
+        areaX: number,
+        areaY: number,
+        areaWidth: number,
+        areaHeight: number,
+        lineHeight: number
+    ) {
+        const lines = text.split("\n");
+        const totalHeight = lines.length * lineHeight;
+        const startY = areaY + (areaHeight - totalHeight) / 2;
+        lines.forEach((line, index) => {
+            const offsetY = startY + index * lineHeight;
+            const textWidth = ctx.measureText(line).width;
+            const offsetX = areaX + (areaWidth - textWidth) / 2;
+            ctx.fillText(line, offsetX, offsetY);
+        });
     }
-  }
 
-  visibleTextStamp() {
-    for (let i = 0; i < this.textStampList.length; i++) {
-      if (this.textStampList.at(i)!.pageNumber === this._activeIndex) {
-        this.textStampList.at(i)!.isVisible = true;
-      } else {
-        this.textStampList.at(i)!.isVisible = false;
-      }
+    async saveStampTemplate(templateThumbnail: string) {
+        let customStamp = new CBCustomStamp();
+        customStamp.enableBorder = this.gridOption;
+        customStamp.textStampList = this.textStampList;
+        customStamp.imageStampList = this.imageStampList;
+        customStamp.labelStampList = this.labelStampList;
+        let templateString = customStamp.CBTOJSON(customStamp);
+        let templateStamp: CBTemplateStamp = new CBTemplateStamp();
+        templateStamp.templateName = this.templateName;
+        templateStamp.templateString = JSON.stringify(templateString);
+        templateStamp.templateThumbnail = templateThumbnail;
+        let payload = new HttpParams().set('requestData', JSON.stringify(templateStamp));
+        let response = await lastValueFrom(
+            this.httpService.ConnectByPOST_JSON(
+                `${env.localhost}/stamper/saveTemplate`,
+                templateStamp
+            )
+        );
+        await this.getTemplate();
     }
-  }
 
+    onShowDialog() {
+        if(this.templateStampList.length === 0){
+            this.displayStampDialog = true;
+            this.displayChooseDialog = false;
+            this.displayChooseTemplate = false;
+        } else {
+            this.displayStampDialog = false;
+            this.displayChooseDialog = false;
+            this.displayChooseTemplate = true;
+        }
 
-
-  onMoveEnd(event: any, component: any) {
-    component.x = event.x;
-    component.y = event.y;
-    console.log(event.x, event.y);
-  }
-
-  onResizing(event: any, component: CBImageStamp) {
-    this.size = event.size;
-    console.log(this.size);
-    component.signWidth = event.size.width;
-    component.signHeight = event.size.height;
-  }
-
-  getInfo(component: any) {
-    console.log(component);
-  }
-}
+    }}

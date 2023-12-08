@@ -17,12 +17,16 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
 import { CheckboxModule } from 'primeng/checkbox';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TestCodeComponent } from './test-code/test-code.component';
+import { DropdownModule } from 'primeng/dropdown';
 
 @NgModule({
   declarations: [
     AppComponent,
     SignStamperComponent,
-    TestComponent
+    TestComponent,
+    TestCodeComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +43,9 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     ScrollingModule,
     CheckboxModule,
     DragDropModule,
-    ColorPickerModule
+    ColorPickerModule,
+    FontAwesomeModule,
+    DropdownModule
   ],
   providers: [],
   bootstrap: [AppComponent]

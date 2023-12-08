@@ -1,0 +1,17 @@
+<p-fileUpload
+        name="file[]"
+        [multiple]="false"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        accept="image/*"
+        chooseLabel="เพิ่มลายเซ็น"
+        (onSelect)="onFileSelect($event)"
+></p-fileUpload>
+<canvas
+    #bgCanvas
+    id="bgCanvas"
+    width="800"
+    height="300"
+    style="border: 1px solid #282020"
+></canvas>
+<button (click)="draw()">draw</button>

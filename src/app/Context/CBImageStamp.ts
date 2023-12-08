@@ -7,6 +7,7 @@ export interface CBImageStampInterface {
   pageNumber: number;
   documentID: string;
   isVisible: boolean;
+  showEdit: boolean
 }
 
 export class CBImageStamp {
@@ -19,6 +20,7 @@ export class CBImageStamp {
   public pageNumber: number = -1;
   public documentID: string = '';
   public isVisible: boolean = false
+  public showEdit: boolean = false;
 
   JSONToCB(jsonData: any) {
     this.signContent = jsonData.signContent;

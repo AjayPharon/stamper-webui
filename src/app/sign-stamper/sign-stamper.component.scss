@@ -15,7 +15,6 @@
     // position: absolute;
     cursor: move;
     box-sizing: border-box;
-    transform: scale(100%);
     transform: translate(0%, 0%);
     display: inline-flex;
     z-index: 1;
@@ -32,7 +31,6 @@
     position: absolute;
     // z-index: 1;
     box-sizing: border-box;
-    position: absolute;
     top: 0;
     left: 0;
     transform: translate(0%, 0%);
@@ -96,13 +94,12 @@
     text-align: center;
     height: auto;
     transform: translate(0px, 0px);
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
     line-height: 1;
-    font-family: 'THSarabun';
+    font-family: 'THSarabun', serif;
     padding: 0;
     margin: 0;
-    text-align: end;
   }
 
   .example-viewport {
@@ -121,3 +118,112 @@
     z-index: 5;
     position: absolute;
   }
+
+
+.pn-submit {
+  color: #ffffff;
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s,
+  box-shadow 0.2s;
+  border-radius: 6px;
+  width: 285px;
+  height: 6vh;
+}
+.bgCanvas {
+  width: 800px;
+  height: 300px;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  transform: translate(0, 0);
+}
+.componentCanvas {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  transform: translate(0px, 0px);
+}
+
+.textStamp {
+  // border: 1px solid #000055
+  width: 750px;
+  text-align: center;
+}
+
+.textEditor {
+  z-index: 100;
+  position: absolute;
+  margin-top: 5px;
+}
+
+p {
+  margin: 0;
+}
+
+
+
+.border-btn {
+  display: inline-block;
+  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #686868;
+  border: 1px solid #686868;
+  border-radius: 5px;
+}
+
+.active {
+  background-color: #686868;
+  color: #fff;
+}
+
+.text-btn {
+  display: inline-block;
+  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #008d3b;
+  border: 1px solid #008d3b;
+  border-radius: 5px;
+}
+
+.image-btn {
+  display: inline-block;
+  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #00a2ff;
+  border: 1px solid #00a2ff;
+  border-radius: 5px;
+}
+
+.label-btn {
+  display: inline-block;
+  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #ff7700;
+  border: 1px solid #ff7700;
+  border-radius: 5px;
+}
+
+.label {
+  // border: 1px solid #000055;
+  font: 36px Arial;
+  width: 250px;
+  text-align: left;
+}
+.content {
+  // border: 1px solid #000055;
+  font: 36px Arial;
+  // width: 500px;
+  text-align: left;
+}

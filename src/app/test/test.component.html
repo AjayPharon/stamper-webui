@@ -1,4 +1,4 @@
-<button (click)="configStamp()">Config Stamp</button>
+<!--<button (click)="configStamp()">Config Stamp</button>-->
 
 <p-dialog
   class="pnDialog"
@@ -9,78 +9,259 @@
   [draggable]="false"
   [resizable]="true"
   [breakpoints]="{ '1440px': '60vw', '1000px': '85vw' }"
-  [style]="{ width: '50vw', height: '65vh' }"
-  (onShow)="onDialogShow()"
+  [style]="{ width: '50vw', height: '80vh' }"
 >
-  <div class="d-flex flex-wrap justify-content-center h-75">
-    <div class="d-flex flex-column justify-content-center">
-      <div class="mb-2">
-        <p-checkbox
-          [(ngModel)]="gridOption"
-          [binary]="true"
-          inputId="gridOption"
-          (onChange)="drawBorder()"
-        ></p-checkbox>
-        <label for="gridOption">กรอบข้อความ</label>
-      </div>
-      <div class="bgCanvas mb-2">
-        <canvas
-          #bgCanvas
-          id="bgCanvas"
-          width="800"
-          height="300"
-          style="border: 1px solid #282020"
-          (click)="onClick($event)"
-        ></canvas>
-        <div class="componentCanvas">
-          <canvas id="fgCanvas" width="800" height="300" hidden></canvas>
-          <div
-            class="componentCanvas"
-            *ngFor="let list of this.stampContentList; let i = index"
-            [ngDraggable]="draggable"
-            [position]="{ x: list.x, y: list.y }"
-            [bounds]="bgCanvas"
-            [inBounds]="true"
-            (endOffset)="onMoveEnd($event, list)"
-          >
-            <p
-              id="myParagraph"
-              class="stampContent"
-              contenteditable="true"
-              (input)="onContentChange($event, list)"
-              [style.width.px]="getMaxLineWidth(list.content, '36px Arial')"
-              [style.fontWeight]="list.isBold ? 'bold' : 'normal'"
-              [style.fontStyle]="list.isItalic ? 'italic' : 'normal'"
-              [style.color]="list.color"
-              (focus)="list.isShowTools = true"
-              (blur)="list.isShowTools = false"
-            ></p>
+  <div class="d-flex flex-column justify-content-center h-100">
+    <div class="d-flex flex-row align-items-center">
+      <label for="stampName">ชื่อStamp</label>
+      <input id="stampName" type="text" pInputText [(ngModel)]="templateName" />
+    </div>
 
-            <div class="d-flex justify-content-end" *ngIf="list.isShowTools">
-              <p-colorPicker [(ngModel)]="list.color"></p-colorPicker>
-              <button style="font-size: 1rem" (click)="boldText(list)">
-                B
-              </button>
-              <button style="font-size: 1rem" (click)="italicText(list)">
-                I
-              </button>
-              <i
-                class="pi pi-trash"
-                style="color: red; font-size: 1.5rem"
-                (click)="delete(i)"
-              ></i>
-            </div>
+    <!-- region for component-button -->
+    <div class="d-flex flex-row mb-2">
+      <div class="m-2">
+        <button id="borderBtn" class="border-btn" (click)="toggleBorder()">
+          Border
+        </button>
+      </div>
+      <div class="m-2">
+        <button class="text-btn" (click)="addText()">Text</button>
+      </div>
+      <div class="m-2">
+        <button class="image-btn" (click)="fileInput.click()">Image</button>
+        <input
+          #fileInput
+          type="file"
+          (change)="addImage($event)"
+          style="display: none"
+          accept="image/*"
+        />
+      </div>
+      <div class="m-2">
+        <button class="label-btn" (click)="addLabel()">Label</button>
+      </div>
+      <!-- <p-checkbox
+                [(ngModel)]="gridOption"
+                [binary]="true"
+                inputId="gridOption"
+                (onChange)="drawBorder()"
+              ></p-checkbox>
+              <label for="gridOption">กรอบข้อความ</label> -->
+    </div>
+    <!-- endregion component-button -->
+
+    <!-- region canvas-area -->
+    <div class="bgCanvas mb-2">
+      <canvas
+        #bgCanvas
+        id="bgCanvas"
+        width="800"
+        height="300"
+        style="border: 1px solid #282020"
+      ></canvas>
+      <canvas id="fgCanvas" width="800" height="300" hidden></canvas>
+
+      <!-- region text-stamp -->
+      <div
+        class="componentCanvas"
+        *ngFor="let list of textStampList; let i = index"
+        [ngDraggable]="list.showTools ? false : true"
+        [position]="{ x: list.x, y: list.y }"
+        [bounds]="bgCanvas"
+        [inBounds]="true"
+        (endOffset)="onMoveEnd($event, list)"
+      >
+        <div
+          class="d-flex align-items-center"
+          (mouseover)="showEdit(list)"
+          (mouseleave)="hideEdit(list)"
+        >
+          <p
+            id="textStamp"
+            class="textStamp"
+            [attr.contenteditable]="list.showTools ? 'true' : 'false'"
+            (input)="onContentChange($event, list)"
+            [style.width.px]="getMaxLineWidth(list.content, '16px Arial')"
+            [style.fontWeight]="list.isBold ? 'bold' : 'normal'"
+            [style.fontStyle]="list.isItalic ? 'italic' : 'normal'"
+            [style.color]="list.color"
+            [style.border]="list.showTools ? '1px solid #000055' : 'none'"
+            [style.fontSize.px]="list.fontSize"
+          >
+            เพิ่มข้อความ
+          </p>
+          <i
+            *ngIf="list.showEdit"
+            class="pi"
+            [ngClass]="{
+              'pi-pencil': !list.showTools,
+              'pi-check': list.showTools
+            }"
+            style="color: rgb(81, 81, 81); font-size: 1rem; margin: 3px"
+            (click)="editMode(list)"
+          ></i>
+        </div>
+
+        <div
+          class="d-flex justify-content-end textEditor"
+          *ngIf="list.showTools"
+        >
+          <p-colorPicker [(ngModel)]="list.color"></p-colorPicker>
+          <div class="card flex justify-content-center">
+            <p-dropdown
+              [options]="fontSizes"
+              [(ngModel)]="list.fontSize"
+              [showClear]="false"
+              placeholder="Font Sizes"
+            ></p-dropdown>
           </div>
+          <button style="font-size: 1rem" (click)="boldText(list)">B</button>
+          <button style="font-size: 1rem" (click)="italicText(list)">I</button>
+          <i
+            class="pi pi-trash"
+            style="
+              color: red;
+              font-size: 1.7rem;
+              margin-left: 85px;
+              margin-top: 5px;
+            "
+            (click)="delete(i)"
+          ></i>
         </div>
       </div>
-      <button
-        id="submitBtn"
-        class="pn-submit align-self-end"
-        label="บันทีก Stamp"
-        (click)="combinedCanvas()"
+      <!-- endregion text-stamp -->
+
+      <!-- region image-stamp -->
+      <div
+        *ngFor="let list of imageStampList; let i = index"
+        ngDraggable
+        ngResizable
+        [rzAspectRatio]="true"
+        rzHandles="n,s,e,w,se,sw"
+        class="componentCanvas"
+        [position]="{ x: list.x, y: list.y }"
+        [bounds]="bgCanvas"
+        [inBounds]="true"
+        (endOffset)="onMoveEnd($event, list)"
+        (rzResizing)="onResizing($event, list)"
+        [style.width.px]="list.signWidth"
+        [style.height.px]="list.signHeight"
+        [rzMinWidth]="100"
+        [rzMaxWidth]="800"
+        [rzMinHeight]="100"
+        [rzMaxHeight]="300"
+        (mouseover)="showEdit(list)"
+        (mouseleave)="hideEdit(list)"
       >
-        บันทึก Stamp
-      </button>
+        <img
+          [width]="list.signWidth"
+          [height]="list.signHeight"
+          [src]="list.signContent"
+          #targetRef
+          #imgstamp
+        />
+        <i
+          *ngIf="list.showEdit"
+          class="pi pi-trash"
+          style="color: rgb(255, 0, 0); font-size: 1.5rem; margin: 3px"
+          (click)="deleteImage(i)"
+        ></i>
+      </div>
+      <!-- endregion image-stamp -->
+
+      <!-- region label-stamp -->
+      <div
+        class="componentCanvas"
+        *ngFor="let list of labelStampList; let i = index"
+        [ngDraggable]="list.showTools ? false : true"
+        [position]="{ x: list.x, y: list.y }"
+        [bounds]="bgCanvas"
+        [inBounds]="true"
+        (endOffset)="onMoveEnd($event, list)"
+      >
+        <div
+          class="d-flex align-items-center"
+          (mouseover)="showEdit(list)"
+          (mouseleave)="hideEdit(list)"
+        >
+          <p
+            id="labelStamp"
+            class="label"
+            [attr.contenteditable]="list.showTools ? 'true' : 'false'"
+            (input)="onLabelChange($event, list)"
+            [style.fontWeight]="list.isBold ? 'bold' : 'normal'"
+            [style.fontStyle]="list.isItalic ? 'italic' : 'normal'"
+            [style.color]="list.color"
+            [style.border]="list.showTools ? '1px solid #000055' : 'none'"
+            [style.fontSize.px]="list.fontSize"
+          >
+            เพิ่มหัวข้อ
+          </p>
+          <p
+            id="contentStamp"
+            class="content"
+            [attr.contenteditable]="list.showTools ? 'true' : 'false'"
+            (input)="onContentChange($event, list)"
+            [style.fontWeight]="list.isBold ? 'bold' : 'normal'"
+            [style.fontStyle]="list.isItalic ? 'italic' : 'normal'"
+            [style.width.px]="getMaxLineWidth(list.content, '36px Arial')"
+            [style.color]="list.color"
+            [style.border]="list.showTools ? '1px solid #000055' : 'none'"
+            [style.fontSize.px]="list.fontSize"
+          >
+            เพิ่มเนื้อหา
+          </p>
+          <i
+            *ngIf="list.showEdit"
+            class="pi"
+            [ngClass]="{
+              'pi-pencil': !list.showTools,
+              'pi-check': list.showTools
+            }"
+            style="color: rgb(81, 81, 81); font-size: 1.5rem; margin: 3px"
+            (click)="editMode(list)"
+          ></i>
+        </div>
+        <div
+          class="d-flex justify-content-end textEditor"
+          *ngIf="list.showTools"
+        >
+          <p-colorPicker [(ngModel)]="list.color"></p-colorPicker>
+          <div class="card flex justify-content-center">
+            <p-dropdown
+              [options]="fontSizes"
+              [(ngModel)]="list.fontSize"
+              [showClear]="false"
+              placeholder="Font Sizes"
+            ></p-dropdown>
+          </div>
+          <button style="font-size: 1rem" (click)="boldText(list)">B</button>
+          <button style="font-size: 1rem" (click)="italicText(list)">I</button>
+          <i
+            class="pi pi-trash"
+            style="
+              color: red;
+              font-size: 1.7rem;
+              margin-left: 85px;
+              margin-top: 5px;
+            "
+            (click)="deleteLabel(i)"
+          ></i>
+        </div>
+      </div>
+      <!-- endregion label-stamp -->
     </div>
+    <!-- endregion canvas-area -->
+
+    <!-- region submit-button -->
+    <button
+      id="submitBtn"
+      class="pn-submit align-self-end"
+      label="บันทีก Stamp"
+      (click)="combinedCanvas()"
+    >
+      บันทึก Stamp
+    </button>
+    <!-- endregion submit-button -->
   </div>
 </p-dialog>
