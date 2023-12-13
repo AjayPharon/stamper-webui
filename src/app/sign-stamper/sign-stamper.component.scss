@@ -227,3 +227,51 @@ p {
   // width: 500px;
   text-align: left;
 }
+
+.editStamp {
+  visibility: visible;
+}
+
+.thumbnailStamp {
+  width: 140px;
+  height: 70px;
+  margin: 5px;
+}
+
+.list-box {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #f0f0f0;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+}
+
+.list-container {
+  position: relative;
+}
+
+.stamp-list-item {
+  //border:solid 1px #cccccc;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 2px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.action-panel {
+  display: flex;
+  gap: 10px;
+}
+
+.stamp-item {
+  display: flex;
+  align-items: center;
+}

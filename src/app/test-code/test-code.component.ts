@@ -15,6 +15,14 @@ export class TestCodeComponent {
   ngAfterViewInit(): void {
     const canvas = <HTMLCanvasElement>document.getElementById("bgCanvas");
     const ctx = canvas.getContext("2d")!;
+    var canvasWidth = 1800;  // Width in pixels
+    var canvasHeight = 1200; // Height in pixels
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    var displayWidth = 600;  // Width in CSS pixels
+    var displayHeight = 400; // Height in CSS pixels
+    canvas.style.width = displayWidth + 'px';
+    canvas.style.height = displayHeight + 'px';
     var text = 'ข้อความทดสอบ 1\nข้อความทดสอบ 2\nข้อความทดสอบ 3\nข้อความทดสอบ 4\nข้อความทดสอบ 5'
     this.drawImg(ctx);
     var lines = text.split('\n');
@@ -34,9 +42,9 @@ for (var i = 0; i < lines.length; i++) {
     // const canvas = <HTMLCanvasElement>document.getElementById("bgCanvas");
     // const ctx = canvas.getContext("2d")!;
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 10;
     ctx.fillStyle="white"
-    ctx.fillRect(0, 0, 800, 300);
+    ctx.strokeRect(0, 0, 1800, 1200);
   }
 
   drawImg(ctx:CanvasRenderingContext2D) {
@@ -45,7 +53,7 @@ for (var i = 0; i < lines.length; i++) {
     var img = new Image();
     img.src = "https://cdn.freebiesupply.com/images/thumbs/2x/apple-logo.png";
     img.onload = function () {
-      ctx.drawImage(img, 0, 0, 100, 100);
+      ctx.drawImage(img, 0, 0, 200, 200);
     };
 
     
@@ -71,8 +79,19 @@ for (var i = 0; i < lines.length; i++) {
   draw() {
     const canvas = <HTMLCanvasElement>document.getElementById("bgCanvas");
     const ctx = canvas.getContext("2d")!;
-    // this.drawStroke(ctx);
-    // this.drawImg(ctx);
+    var canvasWidth = 1800;  // Width in pixels
+    var canvasHeight = 1200; // Height in pixels
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    var displayWidth = 600;  // Width in CSS pixels
+    var displayHeight = 400; // Height in CSS pixels
+    canvas.style.width = displayWidth + 'px';
+    canvas.style.height = displayHeight + 'px';
+    this.drawStroke(ctx);
+    ctx.font = "40px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText("ทดสอบข้อความ", 100, 100);
+    this.drawImg(ctx);
 
     const dataUrl = canvas.toDataURL("image/png");
     const downloadLink = document.createElement("a");
@@ -80,7 +99,7 @@ for (var i = 0; i < lines.length; i++) {
     downloadLink.download = "canvas_image.png";
     setTimeout(() => {
       downloadLink.click();
-    }, 1000);
+    }, 5000);
   }
 
   // calculateHeight(): number {

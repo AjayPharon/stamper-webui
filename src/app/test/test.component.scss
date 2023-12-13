@@ -12,8 +12,8 @@
   height: 6vh;
 }
 .bgCanvas {
-  width: 800px;
-  height: 300px;
+  width: 600px;
+  height: 400px;
   z-index: 1;
   top: 0;
   left: 0;
@@ -22,8 +22,8 @@
 .componentCanvas {
   position: absolute;
   z-index: 100;
-  top: 0%;
-  left: 0%;
+  top: 0;
+  left: 0;
   transform: translate(0px, 0px);
 }
 

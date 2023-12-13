@@ -1,6 +1,6 @@
 import {CBImageStamp} from '../Context/CBImageStamp';
 import {CommonService} from "../_services/common.service";
-import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {lastValueFrom} from "rxjs";
 import {HttpConnectService} from "../_services/httpConnectService.service";
 import {environment as env} from "../../environments/environment";
@@ -24,7 +24,7 @@ interface UploadEvent {
     templateUrl: "./sign-stamper.component.html",
     styleUrls: ["./sign-stamper.component.scss"],
 })
-export class SignStamperComponent implements OnInit {
+export class SignStamperComponent implements OnInit, AfterViewInit {
     x: number = 0;
     y: number = 0;
     width: number = 100;
@@ -42,9 +42,6 @@ export class SignStamperComponent implements OnInit {
     frameTop = 0;
     frameLeft = 0;
     DisplayDialogAddTopic: boolean = false;
-    displayStampDialog: boolean = false;
-    displayChooseDialog: boolean = false;
-    displayChooseTemplate: boolean = false;
     displayDialog: boolean = false;
     templateStampList: CBTemplateStamp[] = [];
     zoom: number = 1.0;
@@ -57,11 +54,14 @@ export class SignStamperComponent implements OnInit {
 
 
     templateName: string = "";
+    borderColor: string = '#000000';
     gridOption: boolean = false;
     textStampList: CBText[] = [];
     imageStampList: CBImage[] = [];
     labelStampList: CBLabel[] = [];
     fontSizes: number[] = [10, 12, 14, 16, 18, 20, 40, 50, 60];
+
+
 
     @ViewChild("imageListContainer") imageListContainer!: ElementRef;
     @ViewChild('myGalleria') galleria!: ElementRef;
@@ -73,18 +73,11 @@ export class SignStamperComponent implements OnInit {
     ) {
     }
 
-    ngOnInit() {
+    async ngOnInit() {
+        await this.getTemplate();
     }
 
     ngAfterViewInit(): void {
-        // this.detectScrolling();
-        // this.drawCanvas();
-    }
-
-    async chooseTemplate() {
-        this.displayDialog = true;
-        await this.getTemplate();
-
     }
 
     async getTemplate() {
@@ -95,12 +88,6 @@ export class SignStamperComponent implements OnInit {
         console.log('response', response);
         console.log('response length', response.length)
         this.templateStampList = response;
-    }
-
-    openConfigDialog() {
-        this.displayChooseDialog = true;
-        this.displayStampDialog = false;
-        this.displayChooseTemplate = false;
     }
 
     showTextFrame(event: MouseEvent) {
@@ -156,16 +143,7 @@ export class SignStamperComponent implements OnInit {
         for (let file of event.files) {
             reader.readAsDataURL(file);
             reader.onload = (event) => {
-                let sign_item = new CBImageStamp();
-                sign_item.signContent = reader.result!.toString();
-                sign_item.signWidth = this.width;
-                sign_item.signHeight = this.height;
-                sign_item.x = this.x;
-                sign_item.y = this.y;
-                sign_item.pageNumber = this._activeIndex;
-                sign_item.documentID = this.documentID;
-                sign_item.isVisible = true;
-                this.imageList.push(sign_item);
+                this.addImageList(reader.result!.toString());
             };
         }
     }
@@ -259,6 +237,8 @@ export class SignStamperComponent implements OnInit {
     onMoveEnd(event: any, component: any) {
         component.x = event.x;
         component.y = event.y;
+        console.log('x coordinate',component.x);
+        console.log('y coordinate',component.y);
     }
 
     onResizing(event: any, component: CBImageStamp) {
@@ -279,6 +259,7 @@ export class SignStamperComponent implements OnInit {
     }
 
     drawBorder() {
+        console.log(this.gridOption)
         const canvas = <HTMLCanvasElement>document.getElementById("bgCanvas");
         const ctx = canvas.getContext("2d")!;
         if (this.gridOption) {
@@ -289,8 +270,8 @@ export class SignStamperComponent implements OnInit {
     }
 
     drawStroke(ctx: CanvasRenderingContext2D) {
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = this.borderColor;
+        ctx.lineWidth = 5;
         ctx.strokeRect(this.x, this.y, this.canvasWidth, this.canvasHeight);
     }
 
@@ -301,7 +282,7 @@ export class SignStamperComponent implements OnInit {
     addText() {
         let stampContent = new CBText();
         stampContent.editable = true;
-        stampContent.content = "";
+        stampContent.content = "เพิ่มข้อความ";
         stampContent.x = this.x;
         stampContent.y = this.y;
         stampContent.isBold = false;
@@ -437,19 +418,21 @@ export class SignStamperComponent implements OnInit {
         combinedCtx.drawImage(bgCanvas, this.x, this.y);
         combinedCtx.drawImage(fgCanvas, this.x, this.y);
         const dataUrl = combinedCanvas.toDataURL("image/png");
-        this.saveStampTemplate(dataUrl);
+        await this.saveStampTemplate(dataUrl);
 
-        let sign_item = new CBImageStamp();
-        sign_item.signContent = dataUrl;
-        sign_item.signWidth = 800;
-        sign_item.signHeight = 300;
-        sign_item.x = this.x;
-        sign_item.y = this.y;
-        sign_item.pageNumber = this._activeIndex;
-        sign_item.documentID = this.documentID;
-        sign_item.isVisible = true;
-        this.imageList.push(sign_item);
+        // let sign_item = new CBImageStamp();
+        // sign_item.signContent = dataUrl;
+        // sign_item.signWidth = 800;
+        // sign_item.signHeight = 300;
+        // sign_item.x = this.x;
+        // sign_item.y = this.y;
+        // sign_item.pageNumber = this._activeIndex;
+        // sign_item.documentID = this.documentID;
+        // sign_item.isVisible = true;
+        // this.imageList.push(sign_item);
+        await this.getTemplate();
         this.displayDialog = false;
+
     }
 
     drawContent(ctx: CanvasRenderingContext2D) {
@@ -545,6 +528,15 @@ export class SignStamperComponent implements OnInit {
         });
     }
 
+    async createStamp() {
+        this.gridOption = false;
+        this.textStampList = [];
+        this.imageStampList = [];
+        this.labelStampList = [];
+        this.templateName = '';
+        this.displayDialog = true;
+    }
+
     async saveStampTemplate(templateThumbnail: string) {
         let customStamp = new CBCustomStamp();
         customStamp.enableBorder = this.gridOption;
@@ -554,27 +546,56 @@ export class SignStamperComponent implements OnInit {
         let templateString = customStamp.CBTOJSON(customStamp);
         let templateStamp: CBTemplateStamp = new CBTemplateStamp();
         templateStamp.templateName = this.templateName;
-        templateStamp.templateString = JSON.stringify(templateString);
+        templateStamp.templateData = JSON.stringify(templateString);
         templateStamp.templateThumbnail = templateThumbnail;
+        let jsonTemplate = templateStamp.CBToJSON(templateStamp);
+        console.log('jsonTemplate',jsonTemplate)
         let payload = new HttpParams().set('requestData', JSON.stringify(templateStamp));
         let response = await lastValueFrom(
             this.httpService.ConnectByPOST_JSON(
                 `${env.localhost}/stamper/saveTemplate`,
-                templateStamp
+                jsonTemplate
             )
         );
-        await this.getTemplate();
     }
 
-    onShowDialog() {
-        if(this.templateStampList.length === 0){
-            this.displayStampDialog = true;
-            this.displayChooseDialog = false;
-            this.displayChooseTemplate = false;
-        } else {
-            this.displayStampDialog = false;
-            this.displayChooseDialog = false;
-            this.displayChooseTemplate = true;
-        }
+    editTemplate(template: any) {
+        this.displayDialog = true
+        let templateJSON = new CBTemplateStamp();
+        templateJSON.JSONToCB(template);
+        let customStamp: CBCustomStamp = new CBCustomStamp();
+        customStamp.JSONToCB(JSON.parse(templateJSON.templateData));
+        this.gridOption = customStamp.enableBorder;
+        this.templateName = templateJSON.templateName;
+        this.textStampList = customStamp.textStampList;
+        this.imageStampList = customStamp.imageStampList;
+        this.labelStampList = customStamp.labelStampList;
+        const textStamp = document.getElementById('textStamp')!;
+        setTimeout(() => {
+            for (let item of this.textStampList) {
+                textStamp.innerText = item.content
+            }
+        },1000);
 
-    }}
+        setTimeout(this.drawBorder, 1000);
+
+    }
+
+    selectStamp(selectItem: CBTemplateStamp) {
+        this.addImageList(selectItem.templateThumbnail);
+    }
+
+    addImageList(imageSrc: string) {
+        let sign_item = new CBImageStamp();
+        sign_item.signContent = imageSrc;
+        sign_item.signWidth = 400;
+        sign_item.signHeight = 150;
+        sign_item.x = this.x;
+        sign_item.y = this.y;
+        sign_item.pageNumber = this._activeIndex;
+        sign_item.documentID = this.documentID;
+        sign_item.isVisible = true;
+        this.imageList.push(sign_item);
+    }
+
+}

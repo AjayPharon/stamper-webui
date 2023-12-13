@@ -34,8 +34,12 @@ export class TestComponent {
     imageStampList: CBImage[] = [];
     labelStampList: CBLabel[] = [];
     fontSizes: number[] = [10, 12, 14, 16, 18, 20];
-    canvasWidth:number = 800;
-    canvasHeight:number = 300;
+    canvasWidth:number = 1800;
+    canvasHeight:number = 1200;
+
+    displayWidth:number = 600;
+    displayHeight:number = 400;
+
 
     constructor(
         private httpService: HttpConnectService,
@@ -49,6 +53,10 @@ export class TestComponent {
 
     drawBorder() {
         const canvas = <HTMLCanvasElement>document.getElementById("bgCanvas");
+        canvas.style.width = this.displayWidth + 'px';
+        canvas.style.height = this.displayHeight + 'px';
+
+        console.log('canvas', canvas)
         const ctx = canvas.getContext("2d")!;
         if (this.gridOption) {
             this.drawStroke(ctx);
@@ -338,7 +346,7 @@ export class TestComponent {
         let templateString = customStamp.CBTOJSON(customStamp);
         let templateStamp: CBTemplateStamp = new CBTemplateStamp();
         templateStamp.templateName = this.templateName;
-        templateStamp.templateString = JSON.stringify(templateString);
+        templateStamp.templateData = JSON.stringify(templateString);
         templateStamp.templateThumbnail = templateThumbnail;
         let payload = new HttpParams().set('requestData', JSON.stringify(templateStamp));
         let response = await lastValueFrom(
